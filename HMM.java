@@ -34,38 +34,8 @@ public class HMM {
         }
     }
 
-    public int predictNextEmission() {
-        double[] tempRow = new double[B.length];
-//        double tempRowSum = 0;
-//        for (int i = 0; i < tempRow.length; i++) {
-//            tempRow[i] = B[i][]
-//        }
-
-        double[] nextState = new double[pi[0].length];
-        for (int i = 0; i < A.length; i++) {
-            for (int j = 0; j < A[i].length; j++) {
-                System.err.println(A[i][j]);
-                System.err.println(pi[0][i]);
-                nextState[j] += A[i][j] * pi[0][i];
-            }
-        }
-
-        double[] nextEmmisions = new double[B[0].length];
-        for (int i = 0; i < B.length; i++) {
-            for (int j = 0; j < B[i].length; j++) {
-                nextEmmisions[j] += B[i][j] * nextState[i];
-            }
-        }
-
-        double max = Integer.MIN_VALUE;
-        int prediction = -1;
-        for (int i = 0; i < nextEmmisions.length; i++) {
-            if (nextEmmisions[i] > max) {
-                max = nextEmmisions[i];
-                prediction = i;
-            }
-        }
-        return prediction;
+    public int predictNextEmission(int[] sequence) {
+        return 3;
     }
 
     public void baumWelch(int iterations, int[] sequence) {
@@ -73,12 +43,6 @@ public class HMM {
             double[][] alpha = forward(sequence);
             double[][] beta = backward(sequence);
             update(sequence, alpha, beta);
-        }
-
-        for (int i = 0; i < B.length; i++) {
-            for (int j = 0; j < B[0].length; j++) {
-                System.err.println(B[i][j]);
-            }
         }
     }
 

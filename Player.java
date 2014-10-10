@@ -3,8 +3,9 @@ import java.util.List;
 
 class Player {
     private static final int STATES = 5;
-    public static final int ITERATIONS = 40;
+    public static final int ITERATIONS = 30;
     private List<HMM> hmms = new ArrayList<HMM>();
+    private boolean calculated = false;
     // /constructor
 
     // /There is no data in the beginning, so not much should be done here.
@@ -28,6 +29,8 @@ class Player {
      */
     public Action shoot(GameState pState, Deadline pDue) {
         int sequenceLength = pState.getBird(0).getSeqLength();
+        if (sequenceLength < 50)
+            return cDontShoot;
         /*
          * Here you should write your clever algorithms to get the best action.
          * This skeleton never shoots.
@@ -37,19 +40,29 @@ class Player {
                 hmms.add(new HMM(STATES, Constants.COUNT_MOVE));
             }
         }
-        if (sequenceLength > 50) {
-            for (int i = 0; i < hmms.size(); i++) {
-                int[] sequence = getSequence(pState.getBird(i));
-                hmms.get(i).baumWelch(ITERATIONS, sequence);
-                int next = hmms.get(i).predictNextEmission();
-                System.err.println("prediction: " + next);
-            }
+
+        int birdToShoot = -1;
+        int nextTargetBirdMove = -1;
+        double bestProbability = 0.8;
+        for (int i = 0; i < hmms.size(); i++) {
+            if (pState.getBird(i).isDead())
+                continue;
+            int[] sequence = getSequence(pState.getBird(i));
+            HMM hmm = new HMM(STATES, Constants.COUNT_MOVE);
+            hmm.baumWelch(ITERATIONS, sequence);
+            hmms.set(i, new HMM(STATES, Constants.COUNT_MOVE));
+            int next = hmms.get(i).predictNextEmission(sequence);
+            birdToShoot = i;
+            nextTargetBirdMove = next;
+//            System.err.println("prediction: " + next);
         }
 
+        if (birdToShoot == -1) {
+            return cDontShoot;
+        } else {
+            return new Action(birdToShoot, nextTargetBirdMove);
+        }
 
-
-        // This line choose not to shoot
-        return cDontShoot;
 
         // This line would predict that bird 0 will move right and shoot at it
 //        return new Action(0, Constants.MOVE_RIGHT);
