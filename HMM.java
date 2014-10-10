@@ -44,6 +44,8 @@ public class HMM {
         double[] nextState = new double[pi[0].length];
         for (int i = 0; i < A.length; i++) {
             for (int j = 0; j < A[i].length; j++) {
+                System.err.println(A[i][j]);
+                System.err.println(pi[0][i]);
                 nextState[j] += A[i][j] * pi[0][i];
             }
         }
