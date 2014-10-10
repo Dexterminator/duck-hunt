@@ -1,0 +1,12 @@
+*.class
+.idea/
+/*/local.properties
+/*/out
+/*/*/build
+/*/*/production
+*.iml
+*.iws
+*.ipr
+*~
+*.swp
+.DS_Store
