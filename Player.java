@@ -105,7 +105,7 @@ class Player {
          */
         if (pState.getRound() == 0) {
             for (int i = 0; i < pState.getNumBirds(); ++i)
-                lGuess[i] = Constants.SPECIES_PIGEON;
+                lGuess[i] = Constants.SPECIES_UNKNOWN;
         }
         return lGuess;
     }
@@ -131,19 +131,19 @@ class Player {
      * @param pDue time before which we must have returned
      */
     public void reveal(GameState pState, int[] pSpecies, Deadline pDue) {
-        if (pState.getRound() == 0) {
-            for (int i = 0; i < pSpecies.length; i++) {
-                if (pSpecies[i] == -1)
-                    continue;
-                if (speciesHmms[pSpecies[i]] == null) {
-                    speciesHmms[pSpecies[i]] = hmms.get(i);
-                }
-            }
-        }
-
-        for (int i = 0; i < pSpecies.length; i++) {
-            System.err.println("Guess " + i + ": " + pSpecies[i]);
-        }
+//        if (pState.getRound() == 0) {
+//            for (int i = 0; i < pSpecies.length; i++) {
+//                if (pSpecies[i] == -1)
+//                    continue;
+//                if (speciesHmms[pSpecies[i]] == null) {
+//                    speciesHmms[pSpecies[i]] = hmms.get(i);
+//                }
+//            }
+//        }
+//
+//        for (int i = 0; i < pSpecies.length; i++) {
+//            System.err.println("Guess " + i + ": " + pSpecies[i]);
+//        }
 //        hmms = new ArrayList<HMM>();
     }
 
