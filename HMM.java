@@ -79,20 +79,17 @@ public class HMM {
 
         double[][] alpha = new double[sequence.length][A[0].length];
 
-        // Initialization
         double tempTotalProb = 0;
         for(int i = 0; i < A[0].length; i++){
             alpha[0][i] = B[i][sequence[0]]* pi[0][i];
             tempTotalProb += alpha[0][i];
         }
 
-        // Normalization to avoid underflow
         for(int i = 0; i < A[0].length; i++){
             double temp = alpha[0][i];
             alpha[0][i] = temp/tempTotalProb;
         }
 
-        // Recursion part
         for(int i = 1; i < sequence.length; i++){
             double totalProb = 0;
             for(int j = 0; j < A[0].length; j++){
@@ -197,8 +194,8 @@ public class HMM {
             }
         }
 
-        for(int i=0; i< A[0].length; i++){
-            for(int k = 0; k< B[0].length; k++){
+        for(int i = 0; i < A[0].length; i++){
+            for(int k = 0; k < B[0].length; k++){
                 double sum = 0;
                 double gammasum = 0;
 

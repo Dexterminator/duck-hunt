@@ -103,10 +103,8 @@ class Player {
          * Here you should write your clever algorithms to guess the species of
          * each bird. This skeleton makes no guesses, better safe than sorry!
          */
-        if (pState.getRound() == 0) {
-            for (int i = 0; i < pState.getNumBirds(); ++i)
-                lGuess[i] = Constants.SPECIES_UNKNOWN;
-        }
+        for (int i = 0; i < pState.getNumBirds(); ++i)
+            lGuess[i] = Constants.SPECIES_UNKNOWN;
         return lGuess;
     }
 
