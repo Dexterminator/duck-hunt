@@ -21,7 +21,7 @@ public class HMM {
 
     private void fillMatrix(double[][] matrix){
         Random r = new Random();
-        for(int i = 0; i<matrix.length; i++){
+        for(int i = 0; i < matrix.length; i++){
             double sum = 0;
             for(int j = 0; j < matrix[0].length; j++){
                 double rand = r.nextDouble();
@@ -107,6 +107,15 @@ public class HMM {
         }
 
         return alpha;
+    }
+
+    public double getSequenceProbability(int [] sequence) {
+        double[][] alpha = forward(sequence);
+        double prob = 0;
+        for (int i = 0; i < alpha[0].length; i++) {
+            prob += alpha[sequence.length - 1][i];
+        }
+        return prob;
     }
 
     private double[][] backward(int[] sequence){
