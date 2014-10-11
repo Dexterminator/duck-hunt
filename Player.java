@@ -5,7 +5,6 @@ class Player {
     private static final int STATES = 5;
     public static final int ITERATIONS = 30;
     private List<HMM> hmms = new ArrayList<HMM>();
-    private HMM[] speciesHmms = new HMM[Constants.COUNT_SPECIES];
     int round = -1;
     // /constructor
 
@@ -98,13 +97,15 @@ class Player {
      * @return a vector with guesses for all the birds
      */
     public int[] guess(GameState pState, Deadline pDue) {
-        int[] lGuess = new int[pState.getNumBirds()];
         /*
          * Here you should write your clever algorithms to guess the species of
          * each bird. This skeleton makes no guesses, better safe than sorry!
          */
+
+        int[] lGuess = new int[pState.getNumBirds()];
         for (int i = 0; i < pState.getNumBirds(); ++i)
             lGuess[i] = Constants.SPECIES_UNKNOWN;
+        lGuess[0] = Constants.SPECIES_PIGEON;
         return lGuess;
     }
 
@@ -129,19 +130,9 @@ class Player {
      * @param pDue time before which we must have returned
      */
     public void reveal(GameState pState, int[] pSpecies, Deadline pDue) {
-//        if (pState.getRound() == 0) {
-//            for (int i = 0; i < pSpecies.length; i++) {
-//                if (pSpecies[i] == -1)
-//                    continue;
-//                if (speciesHmms[pSpecies[i]] == null) {
-//                    speciesHmms[pSpecies[i]] = hmms.get(i);
-//                }
-//            }
-//        }
-//
-//        for (int i = 0; i < pSpecies.length; i++) {
-//            System.err.println("Guess " + i + ": " + pSpecies[i]);
-//        }
+        for (int i = 0; i < pSpecies.length; i++) {
+            System.err.println("Guess " + i + ": " + pSpecies[i]);
+        }
 //        hmms = new ArrayList<HMM>();
     }
 
