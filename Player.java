@@ -5,7 +5,8 @@ class Player {
     private static final int STATES = 5;
     public static final int ITERATIONS = 30;
     private List<HMM> hmms = new ArrayList<HMM>();
-    private boolean calculated = false;
+    private HMM[] speciesHmms = new HMM[Constants.COUNT_SPECIES];
+    int round = -1;
     // /constructor
 
     // /There is no data in the beginning, so not much should be done here.
@@ -28,6 +29,11 @@ class Player {
      * @return the prediction of a bird we want to shoot at, or cDontShoot to pass
      */
     public Action shoot(GameState pState, Deadline pDue) {
+        if (pState.getRound() != round) {
+            round = pState.getRound();
+            hmms.clear();
+        }
+
         int sequenceLength = pState.getBird(0).getSeqLength();
         if (sequenceLength < 50)
             return cDontShoot;
@@ -43,18 +49,21 @@ class Player {
 
         int birdToShoot = -1;
         int nextTargetBirdMove = -1;
-        double bestProbability = 0.8;
+        double bestProbability = 0.7;
         for (int i = 0; i < hmms.size(); i++) {
             if (pState.getBird(i).isDead())
                 continue;
             int[] sequence = getSequence(pState.getBird(i));
             HMM hmm = new HMM(STATES, Constants.COUNT_MOVE);
             hmm.baumWelch(ITERATIONS, sequence);
-            hmms.set(i, new HMM(STATES, Constants.COUNT_MOVE));
-            int next = hmms.get(i).predictNextEmission(sequence);
-            birdToShoot = i;
-            nextTargetBirdMove = next;
-//            System.err.println("prediction: " + next);
+            hmms.set(i, hmm);
+            double[] nextProbs = hmm.predictNextEmissions(sequence);
+            int mostProbable = hmm.getMostProbableObservation(nextProbs);
+            double prob = nextProbs[mostProbable];
+            if (prob > bestProbability) {
+                birdToShoot = i;
+                nextTargetBirdMove = mostProbable;
+            }
         }
 
         if (birdToShoot == -1) {
@@ -89,14 +98,15 @@ class Player {
      * @return a vector with guesses for all the birds
      */
     public int[] guess(GameState pState, Deadline pDue) {
+        int[] lGuess = new int[pState.getNumBirds()];
         /*
          * Here you should write your clever algorithms to guess the species of
          * each bird. This skeleton makes no guesses, better safe than sorry!
          */
-
-        int[] lGuess = new int[pState.getNumBirds()];
-        for (int i = 0; i < pState.getNumBirds(); ++i)
-            lGuess[i] = Constants.SPECIES_UNKNOWN;
+        if (pState.getRound() == 0) {
+            for (int i = 0; i < pState.getNumBirds(); ++i)
+                lGuess[i] = Constants.SPECIES_PIGEON;
+        }
         return lGuess;
     }
 
@@ -121,9 +131,20 @@ class Player {
      * @param pDue time before which we must have returned
      */
     public void reveal(GameState pState, int[] pSpecies, Deadline pDue) {
+        if (pState.getRound() == 0) {
+            for (int i = 0; i < pSpecies.length; i++) {
+                if (pSpecies[i] == -1)
+                    continue;
+                if (speciesHmms[pSpecies[i]] == null) {
+                    speciesHmms[pSpecies[i]] = hmms.get(i);
+                }
+            }
+        }
+
         for (int i = 0; i < pSpecies.length; i++) {
             System.err.println("Guess " + i + ": " + pSpecies[i]);
         }
+//        hmms = new ArrayList<HMM>();
     }
 
     public static final Action cDontShoot = new Action(-1, -1);

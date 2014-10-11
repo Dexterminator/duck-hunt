@@ -7,11 +7,13 @@ public class HMM {
     private double[][] A;
     private double[][] B;
     private double[][] pi;
+    private double[] finalStateProbs;
 
     public HMM(int states, int emissions) {
         A = new double[states][states];
         B = new double[states][emissions];
         pi = new double[1][states];
+        finalStateProbs = new double[states];
         fillMatrix(A);
         fillMatrix(B);
         fillMatrix(pi);
@@ -34,8 +36,35 @@ public class HMM {
         }
     }
 
-    public int predictNextEmission(int[] sequence) {
-        return 3;
+    public double[] predictNextEmissions(int[] sequence) {
+        double[] nextStateProbs = new double[pi[0].length];
+        for (int i = 0; i < A.length; i++) {
+            for (int j = 0; j < A[i].length; j++) {
+                nextStateProbs[j] += A[i][j] * finalStateProbs[i];
+            }
+        }
+
+        // Get the probabilities of the emissions in the predicted next state
+        double[] nextEmissionProbs = new double[B[0].length];
+        for (int i = 0; i < B.length; i++) {
+            for (int j = 0; j < B[i].length; j++) {
+                nextEmissionProbs[j] += B[i][j] * nextStateProbs[i];
+            }
+        }
+
+        return nextEmissionProbs;
+    }
+
+    public int getMostProbableObservation(double[] probs) {
+        double max = Integer.MIN_VALUE;
+        int mostProbable = -1;
+        for (int i = 0; i < probs.length; i++) {
+            if (probs[i] > max) {
+                max = probs[i];
+                mostProbable = i;
+            }
+        }
+        return mostProbable;
     }
 
     public void baumWelch(int iterations, int[] sequence) {
@@ -71,7 +100,7 @@ public class HMM {
                 totalProb += alpha[i][j];
             }
 
-            for( int j = 0; j< A[0].length; j++){
+            for(int j = 0; j< A[0].length; j++){
                 double temp = alpha[i][j];
                 alpha[i][j] = temp/totalProb;
             }
@@ -130,6 +159,9 @@ public class HMM {
             }
         }
 
+        for (int i = 0; i < gamma.length; i++) {
+            finalStateProbs[i] = gamma[i][sequence.length-1];
+        }
 
         double [][][] xi = new double[A[0].length][A[0].length][sequence.length];
 
