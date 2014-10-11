@@ -55,6 +55,10 @@ class Player {
             if (pState.getBird(i).isDead())
                 continue;
             int[] sequence = getSequence(pState.getBird(i));
+            if (speciesHMMs[Constants.SPECIES_BLACK_STORK] != null &&
+                    speciesHMMs[Constants.SPECIES_BLACK_STORK].getSequenceProbability(sequence) > 0.8) {
+                continue;
+            }
             HMM hmm = new HMM(STATES, Constants.COUNT_MOVE);
             hmm.baumWelch(ITERATIONS, sequence);
             hmms.set(i, hmm);
@@ -150,6 +154,8 @@ class Player {
      * @param pDue time before which we must have returned
      */
     public void reveal(GameState pState, int[] pSpecies, Deadline pDue) {
+        if (pState.getRound() != 0)
+            return;
         for (int i = 0; i < pSpecies.length; i++) {
             if (pSpecies[i] == -1)
                 continue;
